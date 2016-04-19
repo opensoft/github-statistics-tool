@@ -11,8 +11,7 @@ import sys
 import logging
 import os.path
 import csv
-
-from pprint import pprint
+import datetime
 
 from Config import Config
 from GithubCartographer import GithubCartographer
@@ -52,7 +51,13 @@ def write_git_log(conf: Config, csvwriter, organisation, limit = 0) -> None:
         logging.warning("[%i/%i] %s :: %i commits" % (processed, rcount, r["name"], commits) )
 
         for c in gitlog:
-            csvwriter.writerow([organisation, r["name"], c["author"]["name"], c["author"]["email"], c["author"]["date"]])
+            dt = datetime.datetime.strptime(c["author"]["date"], "%Y-%m-%dT%H:%M:%SZ").strftime("%Y-%m-%d %H:%M:%S")
+            csvwriter.writerow([organisation,
+                                r["name"],
+                                c["author"]["name"],
+                                c["author"]["email"],
+                                dt]
+                               )
 
         processed += 1
 

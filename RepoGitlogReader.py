@@ -57,7 +57,6 @@ class RepoGitlogReader(object):
             "sha":          commit["sha"],
             "message":      commit["commit"]["message"],
             "author":       commit["commit"]["author"]
-            # "committer":    commit["commit"]["committer"]
         }
 
 def do_test():
