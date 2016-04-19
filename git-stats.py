@@ -32,23 +32,26 @@ def get_help() -> str:
         )
 
 
-def write_git_log(conf: Config, csvwriter, organisation, limit = 0) -> None:
+def write_git_log(conf: Config, csvwriter, organisation, limit = 0) -> int:
     cartographer = GithubCartographer(conf, organisation)
     repos = cartographer.list_all()
     rcount = len(repos)
-    logging.warning("Total number of repositories found: %i" % rcount)
+    print("Total number of repositories found: %i" % rcount)
 
     gitlog_reader = RepoGitlogReader(conf)
 
     processed = 1
+    ccount = 0
     for r in repos:
         if limit > 0 and processed > limit:
             logging.warning("Reposutory count limit of %i has been hit" % limit)
             break
 
+        print("[%i/%i] %s" % (processed, rcount, r["name"]), end="", flush=True)
         gitlog = gitlog_reader.get_repo_commits(organisation, r["name"])
         commits = len(gitlog)
-        logging.warning("[%i/%i] %s :: %i commits" % (processed, rcount, r["name"], commits) )
+        print(" :: %i commits" % commits)
+        ccount += commits
 
         for c in gitlog:
             dt = datetime.datetime.strptime(c["author"]["date"], "%Y-%m-%dT%H:%M:%SZ").strftime("%Y-%m-%d %H:%M:%S")
@@ -60,6 +63,8 @@ def write_git_log(conf: Config, csvwriter, organisation, limit = 0) -> None:
                                )
 
         processed += 1
+
+    return ccount
 
 
 def main() -> None:
@@ -95,7 +100,8 @@ def main() -> None:
     with open(ofname, 'w') as csvfile:
         csvwriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         csvwriter.writerow(["Company", "Project", "Author", "Email", "Date"])
-        write_git_log(config, csvwriter, organisation, limit)
+        count = write_git_log(config, csvwriter, organisation, limit)
+        print(count, " commits saved")
 
 
 if __name__ == "__main__":
