@@ -12,7 +12,6 @@
   "include": [
     "config/secret.config.json",
     "config/github.config.json"
-    // "/etc/git-cloner.json"
   ],
 
   /*
@@ -25,15 +24,6 @@
     50 <--> CRITICAL, FATAL
   */
   "log_level": "WARN",
-
-  /*
-    Timeouts for git operations in seconds
-  */
-  "timeouts": {
-    "clone": 10800, // it takes a little bit less than 2 hours (sic!) to clone ONP repository
-    "fetch": 1800, // fetch and push operations
-    "other": 120
-  },
 
   /*
     since  Only commits after this date will be returned. This is a timestamp in ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ.
