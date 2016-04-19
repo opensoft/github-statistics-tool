@@ -1,0 +1,48 @@
+{
+  /*
+    This is a main config file
+    It supports option to include the other config files
+    if these config files exist then the values from there will override the current values
+    If the file mentioned will not be found a WARNING message will be logged out
+    absolute or relative file names are supported
+    Include directive is supported in the included files as well, however, depth of the including graph should not exceed 10
+    Absolute or relative paths are allowed, however relative a root folder for relative paths are application folder
+    Where Config.py module is located.
+  */
+  "include": [
+    "config/secret.config.json",
+    "config/github.config.json"
+    // "/etc/git-cloner.json"
+  ],
+
+  /*
+    String or Integer or just an empty string value. Avaliable values for log level are:
+    0  <--> NOTSET
+    10 <--> DEBUG
+    20 <--> INFO
+    30 <--> WARNING, WARN
+    40 <--> ERROR
+    50 <--> CRITICAL, FATAL
+  */
+  "log_level": "WARN",
+
+  /*
+    Timeouts for git operations in seconds
+  */
+  "timeouts": {
+    "clone": 10800, // it takes a little bit less than 2 hours (sic!) to clone ONP repository
+    "fetch": 1800, // fetch and push operations
+    "other": 120
+  },
+
+  /*
+    since  Only commits after this date will be returned. This is a timestamp in ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ.
+    until  Only commits before this date will be returned. This is a timestamp in ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ.
+
+    Blank dates are ignored
+  */
+  "timeframe": {
+    "since":"2012-01-01",
+    "until":""
+  }
+}

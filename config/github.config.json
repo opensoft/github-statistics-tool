@@ -1,0 +1,8 @@
+{
+  /*
+    Config file that keeps all data needed to login to github and enumerate avaliable reposiories
+  */
+  "github": {
+    "api": "https://api.github.com/"
+  }
+}

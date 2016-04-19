@@ -1,0 +1,39 @@
+### IntelliJ project files
+.idea
+*.iml
+out
+gen
+
+### Linux stuff
+# KDE directory preferences
+.directory
+dashboard/tmp/
+temp/
+
+### Python template
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+# Distribution / packaging
+.Python
+env/
+venv
+
+### Temp eritor files
+~*.*
+*.old
+
+# Secret user data with passwords
+config/secret.config.json
+config/.*
+
+### Other misc files
+unlisted*.txt
+
+### clones folder
+clones/**
+!clones/README.md
+
+### csv files
+*.csv
