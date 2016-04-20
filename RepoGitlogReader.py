@@ -9,7 +9,6 @@ Module for reading gitlog for the specifiet github repository
 import requests
 import json
 import logging
-import datetime
 
 from Config import Config
 # from CommandExecutor import execute_command

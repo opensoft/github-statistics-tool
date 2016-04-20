@@ -33,6 +33,8 @@ def get_help() -> str:
 
 
 def write_git_log(conf: Config, csvwriter, organisation, skip = None, limit = None) -> int:
+    csvwriter.writerow(["Company", "Project", "Author", "Email", "Date"])
+
     cartographer = GithubCartographer(conf, organisation)
     repos = cartographer.list_all()[skip:limit]
 
@@ -64,6 +66,52 @@ def write_git_log(conf: Config, csvwriter, organisation, skip = None, limit = No
     return ccount
 
 
+def write_combined_log(conf: Config, csvwriter, organisation, skip = None, limit = None) -> int:
+    csvwriter.writerow(["Company", "Project", "Month", "Email", "Author", "Commits"])
+    cartographer = GithubCartographer(conf, organisation)
+    repos = cartographer.list_all()[skip:limit]
+
+    rcount = len(repos)
+    print("Total number of repositories found: %i" % rcount)
+
+    gitlog_reader = RepoGitlogReader(conf)
+
+    processed = 1
+    ccount = 0
+    for r in repos:
+        rname = r["name"]
+        print("[%i/%i] %s " % (processed, rcount, rname), end="", flush=True)
+        gitlog = gitlog_reader.get_repo_commits(organisation, rname)
+        commits = len(gitlog)
+        print(" %i commits" % commits)
+        ccount += commits
+        combined = dict()
+
+        for c in gitlog:
+            dt = datetime.datetime.strptime(c["author"]["date"], "%Y-%m-%dT%H:%M:%SZ").strftime("%Y-%m")
+            if dt not in combined:
+                combined[dt] = dict()
+
+            if c["author"]["email"] not in combined[dt]:
+                combined[dt][ c["author"]["email"] ] = {"author": c["author"]["name"], "commits": 1}
+            else:
+                combined[dt][c["author"]["email"]]["commits"] += 1
+
+        for month, month_rec in combined.items():
+            for email, rec in month_rec.items():
+                csvwriter.writerow([organisation,
+                                    rname,
+                                    month,
+                                    email,
+                                    rec["author"],
+                                    rec["commits"]]
+                                   )
+
+        processed += 1
+
+    return ccount
+
+
 def main() -> None:
     logging.basicConfig(format='%(asctime)s %(levelname)s> %(message)010s', level=logging.WARN)
 
@@ -77,6 +125,7 @@ def main() -> None:
     limit = None
     # skip some number of repositories from the beginning of the list, for dev bugfixing only
     skip = 0
+
     if len(sys.argv) == 6:
         if sys.argv[4] == "-limit":
             limit = int(sys.argv[5])
@@ -98,8 +147,8 @@ def main() -> None:
 
     with open(ofname, 'w') as csvfile:
         csvwriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-        csvwriter.writerow(["Company", "Project", "Author", "Email", "Date"])
-        count = write_git_log(config, csvwriter, organisation, skip = skip, limit = limit)
+        # count = write_git_log(config, csvwriter, organisation, skip = skip, limit = limit)
+        count = write_combined_log(config, csvwriter, organisation, skip = skip, limit = limit)
         print(count, " commits saved")
 
 
