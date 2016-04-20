@@ -32,9 +32,10 @@ def get_help() -> str:
         )
 
 
-def write_git_log(conf: Config, csvwriter, organisation, limit = 0) -> int:
+def write_git_log(conf: Config, csvwriter, organisation, skip = None, limit = None) -> int:
     cartographer = GithubCartographer(conf, organisation)
-    repos = cartographer.list_all()
+    repos = cartographer.list_all()[skip:limit]
+
     rcount = len(repos)
     print("Total number of repositories found: %i" % rcount)
 
@@ -43,10 +44,6 @@ def write_git_log(conf: Config, csvwriter, organisation, limit = 0) -> int:
     processed = 1
     ccount = 0
     for r in repos:
-        if limit > 0 and processed > limit:
-            logging.warning("Reposutory count limit of %i has been hit" % limit)
-            break
-
         print("[%i/%i] %s" % (processed, rcount, r["name"]), end="", flush=True)
         gitlog = gitlog_reader.get_repo_commits(organisation, r["name"])
         commits = len(gitlog)
@@ -77,7 +74,9 @@ def main() -> None:
     organisation = sys.argv[1]
     ofname = sys.argv[3]
 
-    limit = 0
+    limit = None
+    # skip some number of repositories from the beginning of the list, for dev bugfixing only
+    skip = 91
     if len(sys.argv) == 6:
         if sys.argv[4] == "-limit":
             limit = int(sys.argv[5])
@@ -100,7 +99,7 @@ def main() -> None:
     with open(ofname, 'w') as csvfile:
         csvwriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         csvwriter.writerow(["Company", "Project", "Author", "Email", "Date"])
-        count = write_git_log(config, csvwriter, organisation, limit)
+        count = write_git_log(config, csvwriter, organisation, skip = skip, limit = limit)
         print(count, " commits saved")
 
 

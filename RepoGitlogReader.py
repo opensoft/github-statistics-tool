@@ -34,12 +34,17 @@ class RepoGitlogReader(object):
 
         for page in range(1, MAX_NUMBER_OF_PAGES):  # github returns 30 items per page1
             params = {"page": page}
+            if page == MAX_NUMBER_OF_PAGES:
+                logging.warning("Maximum page number of %i was hit for this repo", page)
             if self._since:
                 params["since"] = self._since
             if self._until:
                 params["until"] = self._until
 
             r = requests.get(url, auth=(self._username, self._token), params=params)
+            if r.status_code == 409:
+                logging.warning("Error 409 on getting commits for '%s' (empty repo ?), skipping" % repo)
+                break
             if r.status_code != 200:
                 raise Exception("Can't access %s: %s" % (url, repr(r)))
             js = json.loads(r.text)
