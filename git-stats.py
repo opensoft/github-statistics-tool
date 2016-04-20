@@ -76,7 +76,7 @@ def main() -> None:
 
     limit = None
     # skip some number of repositories from the beginning of the list, for dev bugfixing only
-    skip = 91
+    skip = 0
     if len(sys.argv) == 6:
         if sys.argv[4] == "-limit":
             limit = int(sys.argv[5])
