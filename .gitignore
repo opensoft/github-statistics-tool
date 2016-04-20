@@ -37,3 +37,7 @@ clones/**
 
 ### csv files
 *.csv
+
+### tmp repos 
+tmp/
+
