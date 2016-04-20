@@ -14,7 +14,7 @@ import datetime
 from Config import Config
 # from CommandExecutor import execute_command
 
-MAX_NUMBER_OF_PAGES = 1000
+MAX_NUMBER_OF_PAGES = 2000
 
 class RepoGitlogReader(object):
     """
@@ -33,6 +33,13 @@ class RepoGitlogReader(object):
         url = self._api + "repos/" + owner + "/" + repo + "/commits"
 
         for page in range(1, MAX_NUMBER_OF_PAGES):  # github returns 30 items per page1
+            if page % 1000 == 0:
+                print("#", end="", flush=True)
+            elif page % 100 == 0:
+                print("|", end="", flush=True)
+            elif page % 10 == 0:
+                print(":", end="", flush=True)
+
             params = {"page": page}
             if page == MAX_NUMBER_OF_PAGES:
                 logging.warning("Maximum page number of %i was hit for this repo", page)

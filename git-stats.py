@@ -44,10 +44,10 @@ def write_git_log(conf: Config, csvwriter, organisation, skip = None, limit = No
     processed = 1
     ccount = 0
     for r in repos:
-        print("[%i/%i] %s" % (processed, rcount, r["name"]), end="", flush=True)
+        print("[%i/%i] %s " % (processed, rcount, r["name"]), end="", flush=True)
         gitlog = gitlog_reader.get_repo_commits(organisation, r["name"])
         commits = len(gitlog)
-        print(" :: %i commits" % commits)
+        print(" %i commits" % commits)
         ccount += commits
 
         for c in gitlog:
