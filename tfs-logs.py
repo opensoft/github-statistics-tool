@@ -14,13 +14,18 @@ def write_combined_log(csvwriter, organisation, root, notlist) -> int:
     commits = 0
     logging.info("Get logs for: %s" % root)
     subfolders = [o for o in os.listdir(root) if os.path.isdir(os.path.join(root, o))]
-    if ".git" not in subfolders:
+    if (not root.endswith(".git")) and (".git" not in subfolders):
         for fld in subfolders:
             commits += write_combined_log(csvwriter, organisation, os.path.join(root, fld), notlist)
     else:
-        gitlog = execute_command(["git", "log", "--all", "--format=%cn,%ce,%ai"], cwd=root, silent=True, timeout=10).split("\n")
         rname = root[notlist:].replace("%20", " ")
         print("Repo: ", rname, end="")
+
+        try:
+            gitlog = execute_command(["git", "log", "--all", "--format=%cn,%ce,%ai"], cwd=root, silent=True, timeout=10).split("\n")
+        except Exception:
+            print(" => FAILURE")
+            return 0
 
         combined = dict()
 
